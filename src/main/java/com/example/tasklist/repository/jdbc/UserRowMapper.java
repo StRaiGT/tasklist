@@ -11,7 +11,7 @@ import java.util.Set;
 
 @Component
 public class UserRowMapper {
-    public static User mapUser(ResultSet rs) throws SQLException {
+    public static User mapUser(final ResultSet rs) throws SQLException {
         User user = new User();
         Set<Role> roles = new HashSet<>();
 

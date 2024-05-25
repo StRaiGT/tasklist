@@ -10,32 +10,32 @@ import java.util.Optional;
 public class UserDaoJPAService implements UserDao {
     private final UserRepository userRepository;
 
-    public UserDaoJPAService(UserRepository userRepository) {
+    public UserDaoJPAService(final UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     @Override
-    public User createUser(User user) {
+    public User createUser(final User user) {
         return userRepository.save(user);
     }
 
     @Override
-    public User updateUser(User user) {
+    public User updateUser(final User user) {
         return userRepository.save(user);
     }
 
     @Override
-    public void deleteUserById(Long userId) {
+    public void deleteUserById(final Long userId) {
         userRepository.deleteById(userId);
     }
 
     @Override
-    public Optional<User> getUserById(Long userId) {
+    public Optional<User> getUserById(final Long userId) {
         return userRepository.findById(userId);
     }
 
     @Override
-    public Optional<User> getUserByUsername(String username) {
+    public Optional<User> getUserByUsername(final String username) {
         return userRepository.findByUsername(username);
     }
 }

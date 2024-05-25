@@ -13,7 +13,7 @@ import java.util.List;
 
 @Component
 public class TaskRowMapper {
-    public static Task mapTask(ResultSet rs) throws SQLException {
+    public static Task mapTask(final ResultSet rs) throws SQLException {
         Task task = new Task();
 
         while (rs.next()) {
@@ -38,7 +38,7 @@ public class TaskRowMapper {
         return task;
     }
 
-    public static List<Task> mapTasks(ResultSet rs) throws SQLException {
+    public static List<Task> mapTasks(final ResultSet rs) throws SQLException {
         List<Task> tasks = new ArrayList<>();
 
         while (rs.next()) {

@@ -33,40 +33,52 @@ public class UserController {
     private final TaskMapper taskMapper;
 
     @PostMapping
-    public UserDto createUser(@Validated(OnCreate.class) @RequestBody UserDto userDto) {
+    public UserDto createUser(
+            @Validated(OnCreate.class) @RequestBody final UserDto userDto
+    ) {
         User userFromDto = userMapper.toEntity(userDto);
         User createdUser = userService.create(userFromDto);
         return userMapper.toDto(createdUser);
     }
 
     @PutMapping
-    public UserDto updateUser(@Validated(OnUpdate.class) @RequestBody UserDto userDto) {
+    public UserDto updateUser(
+            @Validated(OnUpdate.class) @RequestBody final UserDto userDto
+    ) {
         User userFromDto = userMapper.toEntity(userDto);
         User updatedUser = userService.update(userFromDto);
         return userMapper.toDto(updatedUser);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteUserById(@PathVariable(name = "id") Long userId) {
+    public void deleteUserById(
+            @PathVariable(name = "id") final Long userId
+    ) {
         userService.delete(userId);
     }
 
     @GetMapping("/{id}")
-    public UserDto getUserById(@PathVariable(name = "id") Long userId) {
+    public UserDto getUserById(
+            @PathVariable(name = "id") final Long userId
+    ) {
         User user = userService.getById(userId);
         return userMapper.toDto(user);
     }
 
     @PostMapping("/{id}/tasks")
-    public TaskDto createTask(@PathVariable(name = "id") Long userId,
-                              @Validated(OnCreate.class) @RequestBody TaskDto taskDto) {
+    public TaskDto createTask(
+            @PathVariable(name = "id") final Long userId,
+            @Validated(OnCreate.class) @RequestBody final TaskDto taskDto
+    ) {
         Task taskFromDto = taskMapper.toEntity(taskDto);
         Task createdTask = taskService.create(userId, taskFromDto);
         return taskMapper.toDto(createdTask);
     }
 
     @GetMapping("/{id}/tasks")
-    public List<TaskDto> getTasksByUserId(@PathVariable(name = "id") Long userId) {
+    public List<TaskDto> getTasksByUserId(
+            @PathVariable(name = "id") final Long userId
+    ) {
         List<Task> tasks = taskService.getAllByUserId(userId);
         return taskMapper.toDto(tasks);
     }

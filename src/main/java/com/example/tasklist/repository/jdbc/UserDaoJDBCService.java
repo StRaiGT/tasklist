@@ -1,11 +1,9 @@
 package com.example.tasklist.repository.jdbc;
 
-import com.example.tasklist.exception.NotFoundException;
 import com.example.tasklist.model.entity.User;
 import com.example.tasklist.model.enums.Role;
 import com.example.tasklist.repository.UserDao;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -23,7 +21,7 @@ public class UserDaoJDBCService implements UserDao {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public User createUser(User user) {
+    public User createUser(final User user) {
         final String sqlQuery = """
                 INSERT INTO users (name, username, password)
                 VALUES (?, ?, ?)
@@ -31,7 +29,8 @@ public class UserDaoJDBCService implements UserDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
                 connection -> {
-                    PreparedStatement ps = connection.prepareStatement(sqlQuery, new String[]{"id"});
+                    PreparedStatement ps = connection
+                            .prepareStatement(sqlQuery, new String[]{"id"});
                     ps.setString(1, user.getName());
                     ps.setString(2, user.getUsername());
                     ps.setString(3, user.getPassword());
@@ -47,55 +46,53 @@ public class UserDaoJDBCService implements UserDao {
         return user;
     }
 
-    private void insertUserRoles(User user) {
-        try {
-            if (user.getRoles() != null) {
-                final String sqlQuery = """
-                        INSERT INTO users_roles
-                        VALUES (?, ?)
-                        """;
-                List<Object[]> batch = new ArrayList<>();
-                user.getRoles()
-                        .stream()
-                        .map(Role::toString)
-                        .distinct()
-                        .forEach(role -> batch.add(new Object[]{user.getId(), role}));
-                jdbcTemplate.batchUpdate(sqlQuery, batch);
-            }
-        } catch (DataIntegrityViolationException exception) {
-            throw new NotFoundException("Пользователя с таким id не существует.");
+    private void insertUserRoles(final User user) {
+        if (user.getRoles() != null) {
+            final String sqlQuery = """
+                    INSERT INTO users_roles
+                    VALUES (?, ?)
+                    """;
+            List<Object[]> batch = new ArrayList<>();
+            user.getRoles()
+                    .stream()
+                    .map(Role::toString)
+                    .distinct()
+                    .forEach(role -> batch.add(
+                            new Object[]{user.getId(), role})
+                    );
+            jdbcTemplate.batchUpdate(sqlQuery, batch);
         }
     }
 
     @Override
-    public User updateUser(User user) {
+    public User updateUser(final User user) {
         final String sqlQuery = """
                 UPDATE users
                 SET name = ?, username = ?, password = ?
                 WHERE id = ?
                 """;
-        jdbcTemplate.update(sqlQuery, user.getName(), user.getUsername(), user.getPassword(), user.getId());
+        jdbcTemplate.update(
+                sqlQuery,
+                user.getName(),
+                user.getUsername(),
+                user.getPassword(),
+                user.getId()
+        );
 
         return user;
     }
 
     @Override
-    public void deleteUserById(Long userId) {
-        final String userRolesSqlQuery = """
-                DELETE FROM users_roles
-                WHERE user_id = ?
-                """;
-        jdbcTemplate.update(userRolesSqlQuery, userId);
-
-        final String userSqlQuery = """
+    public void deleteUserById(final Long userId) {
+        final String sqlQuery = """
                 DELETE FROM users
                 WHERE id = ?
                 """;
-        jdbcTemplate.update(userSqlQuery, userId);
+        jdbcTemplate.update(sqlQuery, userId);
     }
 
     @Override
-    public Optional<User> getUserById(Long userId) {
+    public Optional<User> getUserById(final Long userId) {
         final String sqlQuery = """
                 SELECT u.id, u.name, u.username, u.password, ur.role
                 FROM users AS u
@@ -103,11 +100,13 @@ public class UserDaoJDBCService implements UserDao {
                 WHERE u.id = ?
                 """;
 
-        return Optional.ofNullable(jdbcTemplate.query(sqlQuery, UserRowMapper::mapUser, userId));
+        return Optional.ofNullable(
+                jdbcTemplate.query(sqlQuery, UserRowMapper::mapUser, userId)
+        );
     }
 
     @Override
-    public Optional<User> getUserByUsername(String username) {
+    public Optional<User> getUserByUsername(final String username) {
         final String sqlQuery = """
                 SELECT u.id, u.name, u.username, u.password, ur.role
                 FROM users AS u
@@ -115,6 +114,8 @@ public class UserDaoJDBCService implements UserDao {
                 WHERE u.username = ?
                 """;
 
-        return Optional.ofNullable(jdbcTemplate.query(sqlQuery, UserRowMapper::mapUser, username));
+        return Optional.ofNullable(
+                jdbcTemplate.query(sqlQuery, UserRowMapper::mapUser, username)
+        );
     }
 }

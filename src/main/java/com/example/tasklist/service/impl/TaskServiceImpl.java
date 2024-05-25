@@ -20,14 +20,20 @@ public class TaskServiceImpl implements TaskService {
     private final UserService userService;
     private final TaskDao taskDao;
 
-    TaskServiceImpl(UserService userService, @Qualifier("taskDaoJDBC") TaskDao taskDao) {
+    TaskServiceImpl(
+            final UserService userService,
+            @Qualifier("taskDaoJPA") final TaskDao taskDao
+    ) {
         this.userService = userService;
         this.taskDao = taskDao;
     }
 
     @Override
     @Transactional
-    public Task create(Long userId, Task task) {
+    public Task create(
+            final Long userId,
+            final Task task
+    ) {
         log.info("Создание задачи {} для пользователя с id {}", task, userId);
         task.setOwner(userService.getById(userId));
         task.setStatus(Status.TODO);
@@ -37,7 +43,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional
-    public Task update(Task task) {
+    public Task update(final Task task) {
         log.info("Обновление задачи {}", task);
         Task taskFromDB = getById(task.getId());
         if (task.getStatus() != null) {
@@ -52,20 +58,22 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional
-    public void delete(Long taskId) {
+    public void delete(final Long taskId) {
         log.info("Удаление задачи с id {}", taskId);
         taskDao.deleteTaskById(taskId);
     }
 
     @Override
-    public Task getById(Long taskId) {
+    public Task getById(final Long taskId) {
         log.info("Вывод задачи с id {}", taskId);
         return taskDao.getTaskById(taskId)
-                .orElseThrow(() -> new NotFoundException("Задачи с таким id не существует"));
+                .orElseThrow(() -> new NotFoundException(
+                        "Задачи с таким id не существует"
+                ));
     }
 
     @Override
-    public List<Task> getAllByUserId(Long userId) {
+    public List<Task> getAllByUserId(final Long userId) {
         log.info("Вывод всех задачи пользователя с id {}", userId);
         userService.getById(userId);
 

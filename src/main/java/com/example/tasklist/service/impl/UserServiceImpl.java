@@ -19,20 +19,21 @@ import java.util.Set;
 public class UserServiceImpl implements UserService {
     private final UserDao userDao;
 
-    public UserServiceImpl(@Qualifier("userDaoJDBC") UserDao userDao) {
+    public UserServiceImpl(@Qualifier("userDaoJPA") final UserDao userDao) {
         this.userDao = userDao;
     }
 
     @Override
     @Transactional
-    public User create(User user) {
+    public User create(final User user) {
         log.info("Создание пользователя {}", user);
-        if (userDao.getUserByUsername(user.getUsername())
-                .isPresent())
-            throw new ForbiddenException("Пользователь с таким Username уже существует");
+        checkIsUsernameExist(user.getUsername());
         if (!user.getPassword()
-                .equals(user.getPasswordConfirmation()))
-            throw new ForbiddenException("Пароль и его подтверждение не совпадают");
+                .equals(user.getPasswordConfirmation())) {
+            throw new ForbiddenException(
+                    "Пароль и его подтверждение не совпадают"
+            );
+        }
         user.setRoles(Set.of(Role.ROLE_USER));
 
         return userDao.createUser(user);
@@ -40,11 +41,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User update(User user) {
+    public User update(final User user) {
         log.info("Обновление пользователя {}", user);
         User userFromDB = getById(user.getId());
         userFromDB.setName(user.getName());
-        userFromDB.setUsername(user.getUsername());
+        if (user.getUsername() != null
+                && !user.getUsername()
+                .equals(userFromDB.getUsername())
+        ) {
+            checkIsUsernameExist(user.getUsername());
+            userFromDB.setUsername(user.getUsername());
+        }
         userFromDB.setPassword(user.getPassword());
 
         return userDao.updateUser(userFromDB);
@@ -52,15 +59,26 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void delete(Long userId) {
+    public void delete(final Long userId) {
         log.info("Удаление пользователя с id {}", userId);
         userDao.deleteUserById(userId);
     }
 
     @Override
-    public User getById(Long userId) {
+    public User getById(final Long userId) {
         log.info("Вывод пользователя с id {}", userId);
         return userDao.getUserById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователя с таким id не существует"));
+                .orElseThrow(() -> new NotFoundException(
+                        "Пользователя с таким id не существует"
+                ));
+    }
+
+    private void checkIsUsernameExist(final String username) {
+        if (userDao.getUserByUsername(username)
+                .isPresent()) {
+            throw new ForbiddenException(
+                    "Пользователь с таким Username уже существует"
+            );
+        }
     }
 }

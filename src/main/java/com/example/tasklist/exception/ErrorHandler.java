@@ -19,72 +19,97 @@ import java.util.Objects;
 public class ErrorHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiError handleValidationException(final MethodArgumentNotValidException exception) {
+    public ApiError handleValidationException(
+            final MethodArgumentNotValidException exception
+    ) {
         log.error(exception.toString());
         return new ApiError(HttpStatus.BAD_REQUEST.name(),
                 "Incorrectly made request.",
-                String.format("Field: %s. Error: %s", Objects.requireNonNull(exception.getFieldError()).getField(),
-                        exception.getFieldError().getDefaultMessage()),
+                String.format("Field: %s. Error: %s",
+                        Objects.requireNonNull(exception.getFieldError())
+                                .getField(),
+                        exception.getFieldError()
+                                .getDefaultMessage()),
                 getErrors(exception),
                 LocalDateTime.now());
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiError handleValidationException(final HttpMessageNotReadableException exception) {
+    public ApiError handleValidationException(
+            final HttpMessageNotReadableException exception
+    ) {
         log.error(exception.toString());
-        return new ApiError(HttpStatus.BAD_REQUEST.name(),
+        return new ApiError(
+                HttpStatus.BAD_REQUEST.name(),
                 "Incorrectly made request.",
                 exception.getMessage(),
                 getErrors(exception),
-                LocalDateTime.now());
+                LocalDateTime.now()
+        );
     }
 
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ApiError handleNotFoundException(final NotFoundException exception) {
+    public ApiError handleNotFoundException(
+            final NotFoundException exception
+    ) {
         log.error(exception.toString());
-        return new ApiError(HttpStatus.NOT_FOUND.name(),
+        return new ApiError(
+                HttpStatus.NOT_FOUND.name(),
                 "The required object was not found.",
                 exception.getMessage(),
                 getErrors(exception),
-                LocalDateTime.now());
+                LocalDateTime.now()
+        );
     }
 
     @ExceptionHandler(ForbiddenException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ApiError handleForbiddenException(final ForbiddenException exception) {
+    public ApiError handleForbiddenException(
+            final ForbiddenException exception
+    ) {
         log.error(exception.toString());
-        return new ApiError(HttpStatus.CONFLICT.name(),
+        return new ApiError(
+                HttpStatus.CONFLICT.name(),
                 "For the requested operation the conditions are not met.",
                 exception.getMessage(),
                 getErrors(exception),
-                LocalDateTime.now());
+                LocalDateTime.now()
+        );
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ApiError handleDataIntegrityViolationException(final DataIntegrityViolationException exception) {
+    public ApiError handleDataIntegrityViolationException(
+            final DataIntegrityViolationException exception
+    ) {
         log.error(exception.toString());
-        return new ApiError(HttpStatus.CONFLICT.name(),
+        return new ApiError(
+                HttpStatus.CONFLICT.name(),
                 "Integrity constraint has been violated.",
                 exception.getMessage(),
                 getErrors(exception),
-                LocalDateTime.now());
+                LocalDateTime.now()
+        );
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiError handleException(final RuntimeException exception) {
+    public ApiError handleException(
+            final RuntimeException exception
+    ) {
         log.error("Error 400: {}", exception.getMessage(), exception);
-        return new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.name(),
+        return new ApiError(
+                HttpStatus.INTERNAL_SERVER_ERROR.name(),
                 "Unhandled exception.",
                 exception.getMessage(),
                 getErrors(exception),
-                LocalDateTime.now());
+                LocalDateTime.now()
+        );
     }
 
-    private String getErrors(Exception exception) {
+    private String getErrors(final Exception exception) {
         StringWriter stringWriter = new StringWriter();
         PrintWriter printWriter = new PrintWriter(stringWriter);
         exception.printStackTrace(printWriter);

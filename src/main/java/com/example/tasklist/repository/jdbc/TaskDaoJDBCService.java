@@ -21,15 +21,17 @@ public class TaskDaoJDBCService implements TaskDao {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public Task createTask(Task task) {
+    public Task createTask(final Task task) {
         final String sqlQuery = """
-                INSERT INTO tasks (title, description, status, owner_id, expiration_date)
+                INSERT INTO tasks (title, description, status,
+                owner_id, expiration_date)
                 VALUES (?, ?, ?, ?, ?)
                 """;
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
                 connection -> {
-                    PreparedStatement ps = connection.prepareStatement(sqlQuery, new String[]{"id"});
+                    PreparedStatement ps = connection
+                            .prepareStatement(sqlQuery, new String[]{"id"});
                     ps.setString(1, task.getTitle());
                     ps.setString(2, task.getDescription());
                     ps.setString(3, task.getStatus()
@@ -39,7 +41,8 @@ public class TaskDaoJDBCService implements TaskDao {
                     if (task.getExpirationDate() == null) {
                         ps.setNull(5, Types.TIMESTAMP);
                     } else {
-                        ps.setTimestamp(5, Timestamp.valueOf(task.getExpirationDate()));
+                        ps.setTimestamp(5,
+                                Timestamp.valueOf(task.getExpirationDate()));
                     }
                     return ps;
                 },
@@ -52,20 +55,28 @@ public class TaskDaoJDBCService implements TaskDao {
     }
 
     @Override
-    public Task updateTask(Task task) {
+    public Task updateTask(final Task task) {
         final String sqlQuery = """
                 UPDATE tasks
-                SET title = ?, description = ?, status = ?, expiration_date = ?
+                SET title = ?, description = ?,
+                status = ?, expiration_date = ?
                 WHERE id = ?
                 """;
-        jdbcTemplate.update(sqlQuery, task.getTitle(), task.getDescription(), task.getStatus()
-                .toString(), task.getExpirationDate(), task.getId());
+        jdbcTemplate.update(
+                sqlQuery,
+                task.getTitle(),
+                task.getDescription(),
+                task.getStatus()
+                        .toString(),
+                task.getExpirationDate(),
+                task.getId()
+        );
 
         return task;
     }
 
     @Override
-    public void deleteTaskById(Long taskId) {
+    public void deleteTaskById(final Long taskId) {
         final String sqlQuery = """
                 DELETE FROM tasks
                 WHERE id = ?
@@ -74,20 +85,24 @@ public class TaskDaoJDBCService implements TaskDao {
     }
 
     @Override
-    public Optional<Task> getTaskById(Long taskId) {
+    public Optional<Task> getTaskById(final Long taskId) {
         final String sqlQuery = """
-                SELECT id, title, description, status, owner_id, expiration_date
+                SELECT id, title, description, status,
+                owner_id, expiration_date
                 FROM tasks
                 WHERE id = ?
                 """;
 
-        return Optional.ofNullable(jdbcTemplate.query(sqlQuery, TaskRowMapper::mapTask, taskId));
+        return Optional.ofNullable(
+                jdbcTemplate.query(sqlQuery, TaskRowMapper::mapTask, taskId)
+        );
     }
 
     @Override
-    public List<Task> getTasksByUserId(Long userId) {
+    public List<Task> getTasksByUserId(final Long userId) {
         final String sqlQuery = """
-                SELECT t.id, t.title, t.description, t.status, t.owner_id, t.expiration_date
+                SELECT t.id, t.title, t.description, t.status,
+                t.owner_id, t.expiration_date
                 FROM tasks AS t
                 LEFT JOIN users AS u ON u.id = t.owner_id
                 WHERE u.id = ?

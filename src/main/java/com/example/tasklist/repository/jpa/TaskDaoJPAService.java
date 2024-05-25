@@ -11,32 +11,32 @@ import java.util.Optional;
 public class TaskDaoJPAService implements TaskDao {
     private final TaskRepository taskRepository;
 
-    public TaskDaoJPAService(TaskRepository taskRepository) {
+    public TaskDaoJPAService(final TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
     }
 
     @Override
-    public Task createTask(Task task) {
+    public Task createTask(final Task task) {
         return taskRepository.save(task);
     }
 
     @Override
-    public Task updateTask(Task task) {
+    public Task updateTask(final Task task) {
         return taskRepository.save(task);
     }
 
     @Override
-    public void deleteTaskById(Long taskId) {
+    public void deleteTaskById(final Long taskId) {
         taskRepository.deleteById(taskId);
     }
 
     @Override
-    public Optional<Task> getTaskById(Long taskId) {
+    public Optional<Task> getTaskById(final Long taskId) {
         return taskRepository.findById(taskId);
     }
 
     @Override
-    public List<Task> getTasksByUserId(Long userId) {
+    public List<Task> getTasksByUserId(final Long userId) {
         return taskRepository.findAllByOwnerId(userId);
     }
 }

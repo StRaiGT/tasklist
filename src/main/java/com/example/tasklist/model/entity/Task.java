@@ -45,21 +45,26 @@ public class Task {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User owner;
 
+    @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private Status status;
 
     private LocalDateTime expirationDate;
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Task task = (Task) o;
-        return Objects.equals(id, task.id) &&
-                Objects.equals(title, task.title) &&
-                Objects.equals(description, task.description) &&
-                status == task.status &&
-                Objects.equals(expirationDate, task.expirationDate);
+        return Objects.equals(id, task.id)
+                && Objects.equals(title, task.title)
+                && Objects.equals(description, task.description)
+                && status == task.status
+                && Objects.equals(expirationDate, task.expirationDate);
     }
 
     @Override
@@ -69,12 +74,11 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", status=" + status +
-                ", expirationDate=" + expirationDate +
-                '}';
+        return "Task{"
+                + "id=" + id
+                + ", title='" + title + '\''
+                + ", description='" + description + '\''
+                + ", status=" + status
+                + ", expirationDate=" + expirationDate + '}';
     }
 }
