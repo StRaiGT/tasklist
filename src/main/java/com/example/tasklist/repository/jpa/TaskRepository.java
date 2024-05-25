@@ -1,4 +1,4 @@
-package com.example.tasklist.repository;
+package com.example.tasklist.repository.jpa;
 
 import com.example.tasklist.model.entity.Task;
 import org.springframework.data.jpa.repository.JpaRepository;

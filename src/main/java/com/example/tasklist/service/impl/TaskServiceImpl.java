@@ -3,23 +3,27 @@ package com.example.tasklist.service.impl;
 import com.example.tasklist.exception.NotFoundException;
 import com.example.tasklist.model.entity.Task;
 import com.example.tasklist.model.enums.Status;
-import com.example.tasklist.repository.TaskRepository;
+import com.example.tasklist.repository.TaskDao;
 import com.example.tasklist.service.TaskService;
 import com.example.tasklist.service.UserService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Slf4j
 public class TaskServiceImpl implements TaskService {
     private final UserService userService;
-    private final TaskRepository taskRepository;
+    private final TaskDao taskDao;
+
+    TaskServiceImpl(UserService userService, @Qualifier("taskDaoJDBC") TaskDao taskDao) {
+        this.userService = userService;
+        this.taskDao = taskDao;
+    }
 
     @Override
     @Transactional
@@ -28,7 +32,7 @@ public class TaskServiceImpl implements TaskService {
         task.setOwner(userService.getById(userId));
         task.setStatus(Status.TODO);
 
-        return taskRepository.save(task);
+        return taskDao.createTask(task);
     }
 
     @Override
@@ -43,26 +47,28 @@ public class TaskServiceImpl implements TaskService {
         taskFromDB.setDescription(task.getDescription());
         taskFromDB.setExpirationDate(task.getExpirationDate());
 
-        return taskRepository.save(taskFromDB);
+        return taskDao.updateTask(taskFromDB);
     }
 
     @Override
     @Transactional
     public void delete(Long taskId) {
         log.info("Удаление задачи с id {}", taskId);
-        taskRepository.deleteById(taskId);
+        taskDao.deleteTaskById(taskId);
     }
 
     @Override
     public Task getById(Long taskId) {
         log.info("Вывод задачи с id {}", taskId);
-        return taskRepository.findById(taskId)
+        return taskDao.getTaskById(taskId)
                 .orElseThrow(() -> new NotFoundException("Задачи с таким id не существует"));
     }
 
     @Override
     public List<Task> getAllByUserId(Long userId) {
         log.info("Вывод всех задачи пользователя с id {}", userId);
-        return taskRepository.findAllByOwnerId(userId);
+        userService.getById(userId);
+
+        return taskDao.getTasksByUserId(userId);
     }
 }
