@@ -6,8 +6,8 @@ import com.example.tasklist.model.enums.Status;
 import com.example.tasklist.repository.TaskDao;
 import com.example.tasklist.service.TaskService;
 import com.example.tasklist.service.UserService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,18 +15,11 @@ import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 @Slf4j
 public class TaskServiceImpl implements TaskService {
     private final UserService userService;
     private final TaskDao taskDao;
-
-    TaskServiceImpl(
-            final UserService userService,
-            @Qualifier("taskDaoJPA") final TaskDao taskDao
-    ) {
-        this.userService = userService;
-        this.taskDao = taskDao;
-    }
 
     @Override
     @Transactional

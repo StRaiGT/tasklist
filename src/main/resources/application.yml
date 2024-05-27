@@ -23,3 +23,8 @@ security:
     secretKey: Zmdocmhlc3IzMjRoY3hydDM0dGhzZTU0dTkwLTA5
     tokenExpiration: 5m
     refreshTokenExpiration: 30m
+  cors:
+    allowedOrigins: "*"
+    allowedMethods: "*"
+    allowedHeaders: "*"
+    exposedHeaders: "*"

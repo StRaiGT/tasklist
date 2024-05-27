@@ -11,6 +11,7 @@ import com.example.tasklist.model.validation.OnUpdate;
 import com.example.tasklist.service.TaskService;
 import com.example.tasklist.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +34,7 @@ public class UserController {
     private final TaskMapper taskMapper;
 
     @PutMapping
+    @PreAuthorize("@cse.canAccessUser(#userDto.id)")
     public UserDto updateUser(
             @Validated(OnUpdate.class) @RequestBody final UserDto userDto
     ) {
@@ -43,6 +45,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("@cse.canAccessUser(#userId)")
     public void deleteUserById(
             @PathVariable(name = "id") final Long userId
     ) {
@@ -50,6 +53,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("@cse.canAccessUser(#userId)")
     public UserDto getUserById(
             @PathVariable(name = "id") final Long userId
     ) {
@@ -59,6 +63,7 @@ public class UserController {
     }
 
     @PostMapping("/{id}/tasks")
+    @PreAuthorize("@cse.canAccessUser(#userId)")
     public TaskDto createTask(
             @PathVariable(name = "id") final Long userId,
             @Validated(OnCreate.class) @RequestBody final TaskDto taskDto
@@ -70,6 +75,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/tasks")
+    @PreAuthorize("@cse.canAccessUser(#userId)")
     public List<TaskDto> getTasksByUserId(
             @PathVariable(name = "id") final Long userId
     ) {

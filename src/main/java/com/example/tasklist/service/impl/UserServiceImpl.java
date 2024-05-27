@@ -6,8 +6,8 @@ import com.example.tasklist.model.entity.User;
 import com.example.tasklist.model.enums.Role;
 import com.example.tasklist.repository.UserDao;
 import com.example.tasklist.service.UserService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,18 +16,11 @@ import java.util.Set;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 @Slf4j
 public class UserServiceImpl implements UserService {
     private final UserDao userDao;
     private final PasswordEncoder passwordEncoder;
-
-    public UserServiceImpl(
-            @Qualifier("userDaoJPA") final UserDao userDao,
-            final PasswordEncoder passwordEncoder
-    ) {
-        this.userDao = userDao;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @Override
     @Transactional

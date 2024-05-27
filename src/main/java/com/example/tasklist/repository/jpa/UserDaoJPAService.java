@@ -2,11 +2,13 @@ package com.example.tasklist.repository.jpa;
 
 import com.example.tasklist.model.entity.User;
 import com.example.tasklist.repository.UserDao;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository("userDaoJPA")
+@Primary
 public class UserDaoJPAService implements UserDao {
     private final UserRepository userRepository;
 
