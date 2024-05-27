@@ -17,26 +17,26 @@ public class UserDto {
     private Long id;
 
     @NotBlank(groups = {OnCreate.class, OnUpdate.class},
-            message = "Name must be not null")
+            message = "Name must be not blank")
     @Length(max = 255,
             groups = {OnCreate.class, OnUpdate.class},
             message = "Name length must be less than 255 symbols")
     private String name;
 
     @NotBlank(groups = {OnCreate.class, OnUpdate.class},
-            message = "Username must be not null")
+            message = "Username must be not blank")
     @Length(max = 255,
             groups = {OnCreate.class, OnUpdate.class},
             message = "Username length must be less than 255 symbols")
     private String username;
 
     @NotBlank(groups = {OnCreate.class, OnUpdate.class},
-            message = "Password must be not null")
+            message = "Password must be not blank")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @NotBlank(groups = OnCreate.class,
-            message = "Password must be not null")
+            message = "Password must be not blank")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String passwordConfirmation;
 }

@@ -6,6 +6,7 @@ import com.example.tasklist.model.mapper.TaskMapper;
 import com.example.tasklist.model.validation.OnUpdate;
 import com.example.tasklist.service.TaskService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,15 +24,18 @@ public class TaskController {
     private final TaskMapper taskMapper;
 
     @PutMapping
+    @PreAuthorize("@cse.canAccessTask(#taskDto.id)")
     public TaskDto updateTask(
             @Validated(OnUpdate.class) @RequestBody final TaskDto taskDto
     ) {
         Task task = taskMapper.toEntity(taskDto);
         Task updatedTask = taskService.update(task);
+
         return taskMapper.toDto(updatedTask);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("@cse.canAccessTask(#id)")
     public void deleteTaskById(
             @PathVariable final Long id
     ) {
@@ -39,10 +43,12 @@ public class TaskController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("@cse.canAccessTask(#id)")
     public TaskDto getTaskById(
             @PathVariable final Long id
     ) {
         Task task = taskService.getById(id);
+
         return taskMapper.toDto(task);
     }
 }

@@ -2,12 +2,14 @@ package com.example.tasklist.repository.jpa;
 
 import com.example.tasklist.model.entity.Task;
 import com.example.tasklist.repository.TaskDao;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository("taskDaoJPA")
+@Primary
 public class TaskDaoJPAService implements TaskDao {
     private final TaskRepository taskRepository;
 

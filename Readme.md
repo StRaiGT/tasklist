@@ -5,6 +5,7 @@
 ## Стек:
 - Java 17 (Core, Collections, Optional, Stream)
 - Spring Boot
+- Spring Security, JWT, Security expressions
 - JDBC, JPA Hibernate
 - PostgreSQL
 - Maven

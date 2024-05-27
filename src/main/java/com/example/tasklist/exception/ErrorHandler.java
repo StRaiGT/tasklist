@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -17,12 +19,55 @@ import java.util.Objects;
 @RestControllerAdvice
 @Slf4j
 public class ErrorHandler {
+    @ExceptionHandler(AuthenticationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ApiError handleException(
+            final AuthenticationException exception
+    ) {
+        log.error(exception.toString());
+
+        return new ApiError(HttpStatus.UNAUTHORIZED.name(),
+                "Unauthorized request.",
+                exception.getMessage(),
+                getErrors(exception),
+                LocalDateTime.now());
+    }
+
+    @ExceptionHandler(IncorrectTokenException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ApiError handleException(
+            final IncorrectTokenException exception
+    ) {
+        log.error(exception.toString());
+
+        return new ApiError(HttpStatus.UNAUTHORIZED.name(),
+                "Unauthorized request.",
+                exception.getMessage(),
+                getErrors(exception),
+                LocalDateTime.now());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ApiError handleException(
+            final AccessDeniedException exception
+    ) {
+        log.error(exception.toString());
+
+        return new ApiError(HttpStatus.FORBIDDEN.name(),
+                "Access denied.",
+                exception.getMessage(),
+                getErrors(exception),
+                LocalDateTime.now());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleValidationException(
             final MethodArgumentNotValidException exception
     ) {
         log.error(exception.toString());
+
         return new ApiError(HttpStatus.BAD_REQUEST.name(),
                 "Incorrectly made request.",
                 String.format("Field: %s. Error: %s",
@@ -40,6 +85,7 @@ public class ErrorHandler {
             final HttpMessageNotReadableException exception
     ) {
         log.error(exception.toString());
+
         return new ApiError(
                 HttpStatus.BAD_REQUEST.name(),
                 "Incorrectly made request.",
@@ -55,6 +101,7 @@ public class ErrorHandler {
             final NotFoundException exception
     ) {
         log.error(exception.toString());
+
         return new ApiError(
                 HttpStatus.NOT_FOUND.name(),
                 "The required object was not found.",
@@ -70,6 +117,7 @@ public class ErrorHandler {
             final ForbiddenException exception
     ) {
         log.error(exception.toString());
+
         return new ApiError(
                 HttpStatus.CONFLICT.name(),
                 "For the requested operation the conditions are not met.",
@@ -85,6 +133,7 @@ public class ErrorHandler {
             final DataIntegrityViolationException exception
     ) {
         log.error(exception.toString());
+
         return new ApiError(
                 HttpStatus.CONFLICT.name(),
                 "Integrity constraint has been violated.",
@@ -100,6 +149,7 @@ public class ErrorHandler {
             final RuntimeException exception
     ) {
         log.error("Error 400: {}", exception.getMessage(), exception);
+
         return new ApiError(
                 HttpStatus.INTERNAL_SERVER_ERROR.name(),
                 "Unhandled exception.",
