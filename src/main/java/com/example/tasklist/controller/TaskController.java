@@ -28,6 +28,7 @@ public class TaskController {
     ) {
         Task task = taskMapper.toEntity(taskDto);
         Task updatedTask = taskService.update(task);
+
         return taskMapper.toDto(updatedTask);
     }
 
@@ -43,6 +44,7 @@ public class TaskController {
             @PathVariable final Long id
     ) {
         Task task = taskService.getById(id);
+
         return taskMapper.toDto(task);
     }
 }

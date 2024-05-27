@@ -35,9 +35,9 @@ public class TaskServiceImpl implements TaskService {
             final Task task
     ) {
         log.info("Создание задачи {} для пользователя с id {}", task, userId);
+
         task.setOwner(userService.getById(userId));
         task.setStatus(Status.TODO);
-
         return taskDao.createTask(task);
     }
 
@@ -45,6 +45,7 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     public Task update(final Task task) {
         log.info("Обновление задачи {}", task);
+
         Task taskFromDB = getById(task.getId());
         if (task.getStatus() != null) {
             taskFromDB.setStatus(task.getStatus());
@@ -60,12 +61,14 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     public void delete(final Long taskId) {
         log.info("Удаление задачи с id {}", taskId);
+
         taskDao.deleteTaskById(taskId);
     }
 
     @Override
     public Task getById(final Long taskId) {
         log.info("Вывод задачи с id {}", taskId);
+
         return taskDao.getTaskById(taskId)
                 .orElseThrow(() -> new NotFoundException(
                         "Задачи с таким id не существует"
@@ -75,8 +78,8 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<Task> getAllByUserId(final Long userId) {
         log.info("Вывод всех задачи пользователя с id {}", userId);
-        userService.getById(userId);
 
+        userService.getById(userId);
         return taskDao.getTasksByUserId(userId);
     }
 }

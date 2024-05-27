@@ -21,7 +21,7 @@ public class TaskDto {
     private Long id;
 
     @NotBlank(groups = {OnCreate.class, OnUpdate.class},
-            message = "Title must be not null")
+            message = "Title must be not blank")
     @Length(max = 255,
             groups = {OnCreate.class, OnUpdate.class},
             message = "Title length must be less than 255 symbols")

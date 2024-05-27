@@ -32,21 +32,13 @@ public class UserController {
     private final UserMapper userMapper;
     private final TaskMapper taskMapper;
 
-    @PostMapping
-    public UserDto createUser(
-            @Validated(OnCreate.class) @RequestBody final UserDto userDto
-    ) {
-        User userFromDto = userMapper.toEntity(userDto);
-        User createdUser = userService.create(userFromDto);
-        return userMapper.toDto(createdUser);
-    }
-
     @PutMapping
     public UserDto updateUser(
             @Validated(OnUpdate.class) @RequestBody final UserDto userDto
     ) {
         User userFromDto = userMapper.toEntity(userDto);
         User updatedUser = userService.update(userFromDto);
+
         return userMapper.toDto(updatedUser);
     }
 
@@ -62,6 +54,7 @@ public class UserController {
             @PathVariable(name = "id") final Long userId
     ) {
         User user = userService.getById(userId);
+
         return userMapper.toDto(user);
     }
 
@@ -72,6 +65,7 @@ public class UserController {
     ) {
         Task taskFromDto = taskMapper.toEntity(taskDto);
         Task createdTask = taskService.create(userId, taskFromDto);
+
         return taskMapper.toDto(createdTask);
     }
 
@@ -80,6 +74,7 @@ public class UserController {
             @PathVariable(name = "id") final Long userId
     ) {
         List<Task> tasks = taskService.getAllByUserId(userId);
+
         return taskMapper.toDto(tasks);
     }
 }

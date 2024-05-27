@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -17,6 +18,32 @@ import java.util.Objects;
 @RestControllerAdvice
 @Slf4j
 public class ErrorHandler {
+    @ExceptionHandler(AuthenticationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ApiError handleException(
+            final AuthenticationException exception
+    ) {
+        log.error(exception.toString());
+        return new ApiError(HttpStatus.UNAUTHORIZED.name(),
+                "Unauthorized request.",
+                exception.getMessage(),
+                getErrors(exception),
+                LocalDateTime.now());
+    }
+
+    @ExceptionHandler(IncorrectTokenException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ApiError handleException(
+            final IncorrectTokenException exception
+    ) {
+        log.error(exception.toString());
+        return new ApiError(HttpStatus.UNAUTHORIZED.name(),
+                "Unauthorized request.",
+                exception.getMessage(),
+                getErrors(exception),
+                LocalDateTime.now());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleValidationException(
