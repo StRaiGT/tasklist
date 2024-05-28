@@ -7,6 +7,6 @@
 - Spring Boot
 - Spring Security, JWT, Security expressions
 - JDBC, JPA Hibernate
-- PostgreSQL
+- PostgreSQL, Flyway
 - Maven
 - Lombok, MapStruct
