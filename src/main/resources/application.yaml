@@ -12,17 +12,17 @@ spring:
     properties:
       format_sql: true
       show_sql: false
-  sql:
-    init:
-      mode: always
-      continue-on-error: false
-      data-locations: classpath:demo_data.sql
+
+  flyway:
+    default-schema: tasklist
+    init-sqls: create schema if not exists tasklist;
 
 security:
   jwt:
     secretKey: Zmdocmhlc3IzMjRoY3hydDM0dGhzZTU0dTkwLTA5
     tokenExpiration: 5m
     refreshTokenExpiration: 30m
+
   cors:
     allowedOrigins: "*"
     allowedMethods: "*"
