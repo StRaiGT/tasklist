@@ -9,4 +9,4 @@
 - JDBC, JPA Hibernate
 - PostgreSQL, Flyway
 - Maven
-- Lombok, MapStruct
+- Lombok, MapStruct, Swagger
