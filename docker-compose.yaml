@@ -1,0 +1,46 @@
+version: "3"
+
+services:
+  db:
+    container_name: tasklist-db_postgres
+    image: postgres:15.1-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=tasklist
+      - TZ="Europe/Moscow"
+    ports:
+      - "5332:5432"
+    networks:
+      - app-network
+    volumes:
+      - db:/var/lib/postgresql/data/
+    restart: unless-stopped
+
+  app:
+    container_name: tasklist-app
+    build:
+      context: .
+      args:
+        DOCKER_USER: rootless_user
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/tasklist?currentSchema=tasklist
+      TZ: "Europe/Moscow"
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+    depends_on:
+      - db
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db:
+    driver: local
