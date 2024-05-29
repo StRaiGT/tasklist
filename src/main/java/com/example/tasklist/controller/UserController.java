@@ -1,5 +1,6 @@
 package com.example.tasklist.controller;
 
+import com.example.tasklist.exception.ApiError;
 import com.example.tasklist.model.dto.TaskDto;
 import com.example.tasklist.model.dto.UserDto;
 import com.example.tasklist.model.entity.Task;
@@ -10,6 +11,13 @@ import com.example.tasklist.model.validation.OnCreate;
 import com.example.tasklist.model.validation.OnUpdate;
 import com.example.tasklist.service.TaskService;
 import com.example.tasklist.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -27,6 +35,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
+@Tag(name = "User Controller", description = "User API")
 public class UserController {
     private final UserService userService;
     private final TaskService taskService;
@@ -35,6 +44,25 @@ public class UserController {
 
     @PutMapping
     @PreAuthorize("@cse.canAccessUser(#userDto.id)")
+    @Operation(summary = "Update user")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "OK",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(
+                                    implementation = UserDto.class))
+                    }
+            ),
+            @ApiResponse(
+                    responseCode = "Error codes",
+                    description = "Error responses",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(
+                                    implementation = ApiError.class))
+                    }
+            )
+    })
     public UserDto updateUser(
             @Validated(OnUpdate.class) @RequestBody final UserDto userDto
     ) {
@@ -46,6 +74,21 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("@cse.canAccessUser(#userId)")
+    @Operation(summary = "Delete user")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "OK"
+            ),
+            @ApiResponse(
+                    responseCode = "Error codes",
+                    description = "Error responses",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(
+                                    implementation = ApiError.class))
+                    }
+            )
+    })
     public void deleteUserById(
             @PathVariable(name = "id") final Long userId
     ) {
@@ -54,6 +97,25 @@ public class UserController {
 
     @GetMapping("/{id}")
     @PreAuthorize("@cse.canAccessUser(#userId)")
+    @Operation(summary = "Get user by id")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "OK",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(
+                                    implementation = UserDto.class))
+                    }
+            ),
+            @ApiResponse(
+                    responseCode = "Error codes",
+                    description = "Error responses",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(
+                                    implementation = ApiError.class))
+                    }
+            )
+    })
     public UserDto getUserById(
             @PathVariable(name = "id") final Long userId
     ) {
@@ -64,6 +126,25 @@ public class UserController {
 
     @PostMapping("/{id}/tasks")
     @PreAuthorize("@cse.canAccessUser(#userId)")
+    @Operation(summary = "Create task")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "OK",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(
+                                    implementation = TaskDto.class))
+                    }
+            ),
+            @ApiResponse(
+                    responseCode = "Error codes",
+                    description = "Error responses",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(
+                                    implementation = ApiError.class))
+                    }
+            )
+    })
     public TaskDto createTask(
             @PathVariable(name = "id") final Long userId,
             @Validated(OnCreate.class) @RequestBody final TaskDto taskDto
@@ -76,6 +157,25 @@ public class UserController {
 
     @GetMapping("/{id}/tasks")
     @PreAuthorize("@cse.canAccessUser(#userId)")
+    @Operation(summary = "Get all user tasks")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "OK",
+                    content = {@Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(
+                                    implementation = TaskDto.class)))
+                    }
+            ),
+            @ApiResponse(
+                    responseCode = "Error codes",
+                    description = "Error responses",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(
+                                    implementation = ApiError.class))
+                    }
+            )
+    })
     public List<TaskDto> getTasksByUserId(
             @PathVariable(name = "id") final Long userId
     ) {

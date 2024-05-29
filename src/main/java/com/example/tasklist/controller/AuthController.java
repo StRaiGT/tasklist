@@ -1,5 +1,6 @@
 package com.example.tasklist.controller;
 
+import com.example.tasklist.exception.ApiError;
 import com.example.tasklist.model.dto.JwtRequest;
 import com.example.tasklist.model.dto.JwtResponse;
 import com.example.tasklist.model.dto.UserDto;
@@ -8,6 +9,12 @@ import com.example.tasklist.model.mapper.UserMapper;
 import com.example.tasklist.model.validation.OnCreate;
 import com.example.tasklist.service.AuthService;
 import com.example.tasklist.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -21,12 +28,32 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 @Validated
+@Tag(name = "Auth Controller", description = "Auth API")
 public class AuthController {
     private final AuthService authService;
     private final UserService userService;
     private final UserMapper userMapper;
 
     @PostMapping("/login")
+    @Operation(summary = "Login with username and password")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "OK",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(
+                                    implementation = JwtResponse.class))
+                    }
+            ),
+            @ApiResponse(
+                    responseCode = "Error codes",
+                    description = "Error responses",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(
+                                    implementation = ApiError.class))
+                    }
+            )
+    })
     public JwtResponse login(
             @Valid @RequestBody final JwtRequest jwtRequest
     ) {
@@ -34,6 +61,25 @@ public class AuthController {
     }
 
     @PostMapping("/register")
+    @Operation(summary = "Register new user")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "OK",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(
+                                    implementation = UserDto.class))
+                    }
+            ),
+            @ApiResponse(
+                    responseCode = "Error codes",
+                    description = "Error responses",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(
+                                    implementation = ApiError.class))
+                    }
+            )
+    })
     public UserDto register(
             @Validated(OnCreate.class) @RequestBody final UserDto userDto
     ) {
@@ -44,6 +90,25 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
+    @Operation(summary = "Refresh jwt token")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "OK",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(
+                                    implementation = JwtResponse.class))
+                    }
+            ),
+            @ApiResponse(
+                    responseCode = "Error codes",
+                    description = "Error responses",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(
+                                    implementation = ApiError.class))
+                    }
+            )
+    })
     public JwtResponse refresh(
             @NotBlank @RequestBody final String refreshToken
     ) {
