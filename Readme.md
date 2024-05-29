@@ -10,3 +10,4 @@
 - PostgreSQL, Flyway
 - Maven
 - Lombok, MapStruct, Swagger
+- Docker, Docker Compose
