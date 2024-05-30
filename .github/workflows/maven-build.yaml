@@ -34,9 +34,4 @@ jobs:
           cache: 'maven'
 
       - name: Build and run tests with Maven
-        env:
-          POSTGRES_USER: ${{ secrets.POSTGRES_USERNAME }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DATABASE }}
-          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
         run: mvn -ntp -B verify
