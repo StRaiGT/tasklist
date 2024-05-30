@@ -33,5 +33,16 @@ jobs:
           java-version: '17'
           cache: 'maven'
 
+      - name: Create .env file
+        run: |
+          touch .env
+          echo POSTGRES_HOST=${{ secrets.POSTGRES_HOST }} >> .env
+          echo POSTGRES_DATABASE=${{ secrets.POSTGRES_DATABASE }} >> .env
+          echo POSTGRES_SCHEMA=${{ secrets.POSTGRES_SCHEMA }} >> .env
+          echo POSTGRES_USERNAME=${{ secrets.POSTGRES_USERNAME }} >> .env
+          echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
+          echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env
+          cat .env
+
       - name: Build and run tests with Maven
         run: mvn -ntp -B verify
