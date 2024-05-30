@@ -1,9 +1,12 @@
 spring:
+  config:
+    import: optional:file:.env[.properties]
+
   datasource:
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/tasklist?currentSchema=tasklist
-    username: postgres
-    password: postgres
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
+    url: jdbc:postgresql://${POSTGRES_HOST}:5432/${POSTGRES_DATABASE}?currentSchema=${POSTGRES_SCHEMA}
 
   jpa:
     hibernate:
@@ -14,20 +17,21 @@ spring:
       show_sql: false
 
   flyway:
-    default-schema: tasklist
-    init-sqls: create schema if not exists tasklist;
+    default-schema: ${POSTGRES_SCHEMA}
+    init-sqls: create schema if not exists ${POSTGRES_SCHEMA};
 
-security:
-  jwt:
-    secretKey: Zmdocmhlc3IzMjRoY3hydDM0dGhzZTU0dTkwLTA5
-    tokenExpiration: 5m
-    refreshTokenExpiration: 30m
+  security:
+    jwt:
+      secretKey: ${JWT_SECRET}
+      tokenExpiration: 5m
+      refreshTokenExpiration: 30m
 
-  cors:
-    allowedOrigins: "*"
-    allowedMethods: "*"
-    allowedHeaders: "*"
-    exposedHeaders: "*"
+    cors:
+      allowedOrigins: "*"
+      allowedMethods: "*"
+      allowedHeaders: "*"
+      exposedHeaders: "*"
 
-springdoc:
-  override-with-generic-response: false
+  springdoc:
+    override-with-generic-response: false
+

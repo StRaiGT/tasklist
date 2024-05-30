@@ -10,7 +10,7 @@ import java.time.Duration;
 @Component
 @Getter
 @Setter
-@ConfigurationProperties(prefix = "security.jwt")
+@ConfigurationProperties(prefix = "spring.security.jwt")
 public class JwtTokenProperties {
     private String secretKey;
     private Duration tokenExpiration;

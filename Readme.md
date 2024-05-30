@@ -11,3 +11,4 @@
 - Maven
 - Lombok, MapStruct, Swagger
 - Docker, Docker Compose
+- CI/CD with GitHub actions
