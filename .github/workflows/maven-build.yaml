@@ -1,7 +1,8 @@
 name: CI - Build Application and run tests
 
 on:
-  push: [ "main" ]
+  push:
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
