@@ -34,5 +34,4 @@ jobs:
           cache: 'maven'
 
       - name: Build and run tests with Maven
-        env:
         run: mvn -ntp -B verify
