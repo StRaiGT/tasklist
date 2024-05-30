@@ -32,7 +32,7 @@ jobs:
       - uses: mr-smithers-excellent/docker-build-push@v5
         with:
           image: ${{ secrets.DOCKERHUB_USERNAME }}/tasklist
-          tags: ${{steps.build-number.outputs.BUILD_NUMBER}}, latest
+          tags: ${{ steps.build-number.outputs.BUILD_NUMBER }}, latest
           dockerfile: Dockerfile
           registry: docker.io
           username: ${{ secrets.DOCKERHUB_USERNAME }}
