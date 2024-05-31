@@ -17,6 +17,18 @@ services:
       - db:/var/lib/postgresql/data/
     restart: unless-stopped
 
+  cache:
+    container_name: redis
+    image: redis:7.2-alpine
+    environment:
+      - TZ="Europe/Moscow"
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
+    networks:
+      - app-network
+    volumes:
+      - cache:/data
+    restart: unless-stopped
+
   app:
     container_name: tasklist-app
     build:
@@ -27,6 +39,7 @@ services:
       - .env
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/${POSTGRES_DATABASE}?currentSchema=${POSTGRES_SCHEMA}
+      - SPRING_DATA_REDIS_HOST=cache
       - TZ="Europe/Moscow"
     ports:
       - "8080:8080"
@@ -34,6 +47,7 @@ services:
       - app-network
     depends_on:
       - db
+      - cache
     volumes:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
@@ -45,4 +59,6 @@ networks:
 
 volumes:
   db:
+    driver: local
+  cache:
     driver: local

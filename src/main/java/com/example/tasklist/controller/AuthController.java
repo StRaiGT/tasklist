@@ -84,6 +84,7 @@ public class AuthController {
             @Validated(OnCreate.class) @RequestBody final UserDto userDto
     ) {
         User user = userMapper.toEntity(userDto);
+        user.setId(null);
         User createdUser = userService.create(user);
 
         return userMapper.toDto(createdUser);
