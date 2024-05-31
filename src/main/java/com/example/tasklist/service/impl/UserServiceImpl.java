@@ -8,6 +8,9 @@ import com.example.tasklist.repository.UserDao;
 import com.example.tasklist.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +27,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @Cacheable(
+            value = "UserService::getById",
+            condition = "#user.id!=null",
+            key = "#user.id"
+    )
     public User create(final User user) {
         log.info("Создание пользователя {}", user);
 
@@ -42,6 +50,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @CachePut(
+            value = "UserService::getById",
+            key = "#user.id"
+    )
     public User update(final User user) {
         log.info("Обновление пользователя {}", user);
 
@@ -60,6 +72,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @CacheEvict(
+            value = "UserService::getById",
+            key = "#userId"
+    )
     public void delete(final Long userId) {
         log.info("Удаление пользователя с id {}", userId);
 
@@ -67,6 +83,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Cacheable(
+            value = "UserService::getById",
+            key = "#userId"
+    )
     public User getById(final Long userId) {
         log.info("Вывод пользователя с id {}", userId);
 

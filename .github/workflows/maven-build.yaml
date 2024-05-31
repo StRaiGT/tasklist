@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:15.1
+        image: postgres:15.1-alpine
         env:
           POSTGRES_USER: ${{ secrets.POSTGRES_USERNAME }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
@@ -20,6 +20,18 @@ jobs:
           - 5432:5432
         options: >-
           --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7.2-alpine
+        env:
+          REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping | grep PONG"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -41,6 +53,8 @@ jobs:
           echo POSTGRES_SCHEMA=${{ secrets.POSTGRES_SCHEMA }} >> .env
           echo POSTGRES_USERNAME=${{ secrets.POSTGRES_USERNAME }} >> .env
           echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
+          echo REDIS_HOST=${{ secrets.REDIS_HOST }} >> .env
+          echo REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }} >> .env
           echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env
           cat .env
 

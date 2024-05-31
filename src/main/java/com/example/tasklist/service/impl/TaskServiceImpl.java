@@ -8,6 +8,9 @@ import com.example.tasklist.service.TaskService;
 import com.example.tasklist.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +26,11 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional
+    @Cacheable(
+            value = "TaskService::getById",
+            condition = "#task.id!=null",
+            key = "#task.id"
+    )
     public Task create(
             final Long userId,
             final Task task
@@ -36,6 +44,10 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional
+    @CachePut(
+            value = "TaskService::getById",
+            key = "#task.id"
+    )
     public Task update(final Task task) {
         log.info("Обновление задачи {}", task);
 
@@ -52,6 +64,10 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional
+    @CacheEvict(
+            value = "TaskService::getById",
+            key = "#taskId"
+    )
     public void delete(final Long taskId) {
         log.info("Удаление задачи с id {}", taskId);
 
@@ -59,6 +75,10 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Cacheable(
+            value = "TaskService::getById",
+            key = "#taskId"
+    )
     public Task getById(final Long taskId) {
         log.info("Вывод задачи с id {}", taskId);
 

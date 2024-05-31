@@ -1,4 +1,4 @@
-package com.example.tasklist.security.config;
+package com.example.tasklist.config;
 
 import lombok.Getter;
 import lombok.Setter;

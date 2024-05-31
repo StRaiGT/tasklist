@@ -1,4 +1,4 @@
-package com.example.tasklist.security.config;
+package com.example.tasklist.config;
 
 import com.example.tasklist.security.JwtTokenFilter;
 import io.swagger.v3.oas.models.Components;

@@ -41,5 +41,7 @@ jobs:
       - name: Send Telegram Message
         run: >
           curl -X POST -H 'Content-type: application/json'
-          --data '{"chat_id": "${{ secrets.TELEGRAM_CHAT_ID }}", "text":"Deployment to DockerHub completed"}'
+          --data '{"chat_id": "${{ secrets.TELEGRAM_CHAT_ID }}", 
+          "text":"Image tag:${{ steps.build-number.outputs.BUILD_NUMBER }} successfuly pushed 
+          to https://hub.docker.com/repository/docker/${{ secrets.DOCKERHUB_USERNAME }}/tasklist"}'
           https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage

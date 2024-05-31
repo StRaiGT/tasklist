@@ -7,7 +7,7 @@
 - Spring Boot
 - Spring Security, JWT, Security expressions
 - JDBC, JPA Hibernate
-- PostgreSQL, Flyway
+- PostgreSQL, Flyway, Redis
 - Maven
 - Lombok, MapStruct, Swagger
 - Docker, Docker Compose

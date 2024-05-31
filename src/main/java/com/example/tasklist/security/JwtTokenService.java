@@ -1,6 +1,6 @@
 package com.example.tasklist.security;
 
-import com.example.tasklist.security.config.JwtTokenProperties;
+import com.example.tasklist.config.JwtTokenProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;

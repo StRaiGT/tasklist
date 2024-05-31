@@ -20,6 +20,17 @@ spring:
     default-schema: ${POSTGRES_SCHEMA}
     init-sqls: create schema if not exists ${POSTGRES_SCHEMA};
 
+  cache:
+    type: redis
+    cache-names: redis-cache
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      password: ${REDIS_PASSWORD}
+      port: 6379
+      ttl: 10m
+
   security:
     jwt:
       secretKey: ${JWT_SECRET}

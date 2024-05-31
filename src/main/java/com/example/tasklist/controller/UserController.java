@@ -150,6 +150,7 @@ public class UserController {
             @Validated(OnCreate.class) @RequestBody final TaskDto taskDto
     ) {
         Task taskFromDto = taskMapper.toEntity(taskDto);
+        taskFromDto.setId(null);
         Task createdTask = taskService.create(userId, taskFromDto);
 
         return taskMapper.toDto(createdTask);
