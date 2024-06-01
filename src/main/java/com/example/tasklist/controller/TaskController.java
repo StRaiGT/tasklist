@@ -1,10 +1,10 @@
 package com.example.tasklist.controller;
 
 import com.example.tasklist.exception.ApiError;
-import com.example.tasklist.model.dto.TaskDto;
+import com.example.tasklist.model.dto.TaskResponse;
+import com.example.tasklist.model.dto.TaskUpdateRequest;
 import com.example.tasklist.model.entity.Task;
 import com.example.tasklist.model.mapper.TaskMapper;
-import com.example.tasklist.model.validation.OnUpdate;
 import com.example.tasklist.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -12,9 +12,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,7 +32,7 @@ public class TaskController {
     private final TaskMapper taskMapper;
 
     @PutMapping
-    @PreAuthorize("@cse.canAccessTask(#taskDto.id)")
+    @PreAuthorize("@cse.canAccessTask(#taskUpdateRequest.id)")
     @Operation(summary = "Update task")
     @ApiResponses(value = {
             @ApiResponse(
@@ -40,7 +40,7 @@ public class TaskController {
                     description = "OK",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(
-                                    implementation = TaskDto.class))
+                                    implementation = TaskResponse.class))
                     }
             ),
             @ApiResponse(
@@ -52,13 +52,13 @@ public class TaskController {
                     }
             )
     })
-    public TaskDto updateTask(
-            @Validated(OnUpdate.class) @RequestBody final TaskDto taskDto
+    public TaskResponse updateTask(
+            @Valid @RequestBody final TaskUpdateRequest taskUpdateRequest
     ) {
-        Task task = taskMapper.toEntity(taskDto);
+        Task task = taskMapper.toTask(taskUpdateRequest);
         Task updatedTask = taskService.update(task);
 
-        return taskMapper.toDto(updatedTask);
+        return taskMapper.toTaskResponse(updatedTask);
     }
 
     @DeleteMapping("/{id}")
@@ -93,7 +93,7 @@ public class TaskController {
                     description = "OK",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(
-                                    implementation = TaskDto.class))
+                                    implementation = TaskResponse.class))
                     }
             ),
             @ApiResponse(
@@ -105,11 +105,11 @@ public class TaskController {
                     }
             )
     })
-    public TaskDto getTaskById(
+    public TaskResponse getTaskById(
             @PathVariable final Long id
     ) {
         Task task = taskService.getById(id);
 
-        return taskMapper.toDto(task);
+        return taskMapper.toTaskResponse(task);
     }
 }

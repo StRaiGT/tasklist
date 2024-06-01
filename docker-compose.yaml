@@ -2,7 +2,7 @@ version: "3"
 
 services:
   db:
-    container_name: tasklist-db_postgres
+    container_name: tasklist-postgres
     image: postgres:15.1-alpine
     environment:
       - POSTGRES_USER=${POSTGRES_USERNAME}
@@ -18,7 +18,7 @@ services:
     restart: unless-stopped
 
   cache:
-    container_name: redis
+    container_name: tasklist-redis
     image: redis:7.2-alpine
     environment:
       - TZ="Europe/Moscow"
