@@ -10,5 +10,6 @@
 - PostgreSQL, Flyway, Redis
 - Maven
 - Lombok, MapStruct, Swagger
+- JUnit, Mockito, TestContainer
 - Docker, Docker Compose
 - CI/CD with GitHub actions
