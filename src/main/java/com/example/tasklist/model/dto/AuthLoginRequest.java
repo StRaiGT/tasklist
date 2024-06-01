@@ -10,7 +10,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @Schema(description = "Request for login")
-public class JwtRequest {
+public class AuthLoginRequest {
     @Schema(description = "User email",
             example = "william.emard@gmailRU.com")
     @NotBlank(message = "Username must be not blank")

@@ -43,6 +43,6 @@ spring:
       allowedHeaders: "*"
       exposedHeaders: "*"
 
-  springdoc:
-    override-with-generic-response: false
+springdoc:
+  override-with-generic-response: false
 

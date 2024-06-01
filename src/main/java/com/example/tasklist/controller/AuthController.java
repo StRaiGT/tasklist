@@ -1,12 +1,13 @@
 package com.example.tasklist.controller;
 
 import com.example.tasklist.exception.ApiError;
-import com.example.tasklist.model.dto.JwtRequest;
-import com.example.tasklist.model.dto.JwtResponse;
-import com.example.tasklist.model.dto.UserDto;
+import com.example.tasklist.model.dto.AuthLoginRequest;
+import com.example.tasklist.model.dto.AuthRefreshRequest;
+import com.example.tasklist.model.dto.UserCreateRequest;
+import com.example.tasklist.model.dto.AuthResponse;
+import com.example.tasklist.model.dto.UserResponse;
 import com.example.tasklist.model.entity.User;
 import com.example.tasklist.model.mapper.UserMapper;
-import com.example.tasklist.model.validation.OnCreate;
 import com.example.tasklist.service.AuthService;
 import com.example.tasklist.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,9 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
-@Validated
 @Tag(name = "Auth Controller", description = "Auth API")
 public class AuthController {
     private final AuthService authService;
@@ -42,7 +40,7 @@ public class AuthController {
                     description = "OK",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(
-                                    implementation = JwtResponse.class))
+                                    implementation = AuthResponse.class))
                     }
             ),
             @ApiResponse(
@@ -54,10 +52,10 @@ public class AuthController {
                     }
             )
     })
-    public JwtResponse login(
-            @Valid @RequestBody final JwtRequest jwtRequest
+    public AuthResponse login(
+            @Valid @RequestBody final AuthLoginRequest authLoginRequest
     ) {
-        return authService.login(jwtRequest);
+        return authService.login(authLoginRequest);
     }
 
     @PostMapping("/register")
@@ -68,7 +66,7 @@ public class AuthController {
                     description = "OK",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(
-                                    implementation = UserDto.class))
+                                    implementation = UserResponse.class))
                     }
             ),
             @ApiResponse(
@@ -80,14 +78,13 @@ public class AuthController {
                     }
             )
     })
-    public UserDto register(
-            @Validated(OnCreate.class) @RequestBody final UserDto userDto
+    public UserResponse register(
+            @Valid @RequestBody final UserCreateRequest userCreateRequest
     ) {
-        User user = userMapper.toEntity(userDto);
-        user.setId(null);
+        User user = userMapper.toUser(userCreateRequest);
         User createdUser = userService.create(user);
 
-        return userMapper.toDto(createdUser);
+        return userMapper.toUserResponse(createdUser);
     }
 
     @PostMapping("/refresh")
@@ -98,7 +95,7 @@ public class AuthController {
                     description = "OK",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(
-                                    implementation = JwtResponse.class))
+                                    implementation = AuthResponse.class))
                     }
             ),
             @ApiResponse(
@@ -110,9 +107,9 @@ public class AuthController {
                     }
             )
     })
-    public JwtResponse refresh(
-            @NotBlank @RequestBody final String refreshToken
+    public AuthResponse refresh(
+            @Valid @RequestBody final AuthRefreshRequest authRefreshRequest
     ) {
-        return authService.refresh(refreshToken);
+        return authService.refresh(authRefreshRequest);
     }
 }

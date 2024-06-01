@@ -1,14 +1,14 @@
 package com.example.tasklist.controller;
 
 import com.example.tasklist.exception.ApiError;
-import com.example.tasklist.model.dto.TaskDto;
-import com.example.tasklist.model.dto.UserDto;
+import com.example.tasklist.model.dto.TaskCreateRequest;
+import com.example.tasklist.model.dto.TaskResponse;
+import com.example.tasklist.model.dto.UserResponse;
+import com.example.tasklist.model.dto.UserUpdateRequest;
 import com.example.tasklist.model.entity.Task;
 import com.example.tasklist.model.entity.User;
 import com.example.tasklist.model.mapper.TaskMapper;
 import com.example.tasklist.model.mapper.UserMapper;
-import com.example.tasklist.model.validation.OnCreate;
-import com.example.tasklist.model.validation.OnUpdate;
 import com.example.tasklist.service.TaskService;
 import com.example.tasklist.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,9 +18,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,7 +43,7 @@ public class UserController {
     private final TaskMapper taskMapper;
 
     @PutMapping
-    @PreAuthorize("@cse.canAccessUser(#userDto.id)")
+    @PreAuthorize("@cse.canAccessUser(#userUpdateRequest.id)")
     @Operation(summary = "Update user")
     @ApiResponses(value = {
             @ApiResponse(
@@ -51,7 +51,7 @@ public class UserController {
                     description = "OK",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(
-                                    implementation = UserDto.class))
+                                    implementation = UserResponse.class))
                     }
             ),
             @ApiResponse(
@@ -63,13 +63,13 @@ public class UserController {
                     }
             )
     })
-    public UserDto updateUser(
-            @Validated(OnUpdate.class) @RequestBody final UserDto userDto
+    public UserResponse updateUser(
+            @Valid @RequestBody final UserUpdateRequest userUpdateRequest
     ) {
-        User userFromDto = userMapper.toEntity(userDto);
+        User userFromDto = userMapper.toUser(userUpdateRequest);
         User updatedUser = userService.update(userFromDto);
 
-        return userMapper.toDto(updatedUser);
+        return userMapper.toUserResponse(updatedUser);
     }
 
     @DeleteMapping("/{id}")
@@ -104,7 +104,7 @@ public class UserController {
                     description = "OK",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(
-                                    implementation = UserDto.class))
+                                    implementation = UserResponse.class))
                     }
             ),
             @ApiResponse(
@@ -116,24 +116,24 @@ public class UserController {
                     }
             )
     })
-    public UserDto getUserById(
+    public UserResponse getUserById(
             @PathVariable(name = "id") final Long userId
     ) {
         User user = userService.getById(userId);
 
-        return userMapper.toDto(user);
+        return userMapper.toUserResponse(user);
     }
 
     @PostMapping("/{id}/tasks")
     @PreAuthorize("@cse.canAccessUser(#userId)")
-    @Operation(summary = "Create task")
+    @Operation(summary = "Create task by user id")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
                     description = "OK",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(
-                                    implementation = TaskDto.class))
+                                    implementation = TaskResponse.class))
                     }
             ),
             @ApiResponse(
@@ -145,27 +145,26 @@ public class UserController {
                     }
             )
     })
-    public TaskDto createTask(
+    public TaskResponse createTask(
             @PathVariable(name = "id") final Long userId,
-            @Validated(OnCreate.class) @RequestBody final TaskDto taskDto
+            @Valid @RequestBody final TaskCreateRequest taskCreateRequest
     ) {
-        Task taskFromDto = taskMapper.toEntity(taskDto);
-        taskFromDto.setId(null);
+        Task taskFromDto = taskMapper.toTask(taskCreateRequest);
         Task createdTask = taskService.create(userId, taskFromDto);
 
-        return taskMapper.toDto(createdTask);
+        return taskMapper.toTaskResponse(createdTask);
     }
 
     @GetMapping("/{id}/tasks")
     @PreAuthorize("@cse.canAccessUser(#userId)")
-    @Operation(summary = "Get all user tasks")
+    @Operation(summary = "Get all user tasks by user id")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
                     description = "OK",
                     content = {@Content(mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(
-                                    implementation = TaskDto.class)))
+                                    implementation = TaskResponse.class)))
                     }
             ),
             @ApiResponse(
@@ -177,11 +176,11 @@ public class UserController {
                     }
             )
     })
-    public List<TaskDto> getTasksByUserId(
+    public List<TaskResponse> getTasksByUserId(
             @PathVariable(name = "id") final Long userId
     ) {
         List<Task> tasks = taskService.getAllByUserId(userId);
 
-        return taskMapper.toDto(tasks);
+        return taskMapper.toTaskResponse(tasks);
     }
 }

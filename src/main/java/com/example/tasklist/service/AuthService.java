@@ -1,10 +1,11 @@
 package com.example.tasklist.service;
 
-import com.example.tasklist.model.dto.JwtRequest;
-import com.example.tasklist.model.dto.JwtResponse;
+import com.example.tasklist.model.dto.AuthLoginRequest;
+import com.example.tasklist.model.dto.AuthResponse;
+import com.example.tasklist.model.dto.AuthRefreshRequest;
 
 public interface AuthService {
-    JwtResponse login(JwtRequest loginRequest);
+    AuthResponse login(AuthLoginRequest authLoginRequest);
 
-    JwtResponse refresh(String refreshToken);
+    AuthResponse refresh(AuthRefreshRequest authRefreshRequest);
 }

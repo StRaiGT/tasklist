@@ -12,8 +12,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Schema(description = "Response after login")
-public class JwtResponse {
+@Schema(description = "Response with authentication data")
+public class AuthResponse {
     @Schema(description = "User email",
             example = "william.emard@gmailRU.com")
     private String username;

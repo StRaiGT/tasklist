@@ -1,8 +1,9 @@
 package com.example.tasklist.service.impl;
 
 import com.example.tasklist.exception.IncorrectTokenException;
-import com.example.tasklist.model.dto.JwtRequest;
-import com.example.tasklist.model.dto.JwtResponse;
+import com.example.tasklist.model.dto.AuthLoginRequest;
+import com.example.tasklist.model.dto.AuthResponse;
+import com.example.tasklist.model.dto.AuthRefreshRequest;
 import com.example.tasklist.model.entity.User;
 import com.example.tasklist.security.JwtTokenService;
 import com.example.tasklist.service.AuthService;
@@ -27,13 +28,13 @@ public class AuthServiceImpl implements AuthService {
     private final UserService userService;
 
     @Override
-    public JwtResponse login(final JwtRequest jwtRequest) {
-        log.info("Попытка логина {}", jwtRequest);
+    public AuthResponse login(final AuthLoginRequest authLoginRequest) {
+        log.info("Попытка логина {}", authLoginRequest);
 
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(
-                                jwtRequest.getUsername(),
-                                jwtRequest.getPassword()
+                                authLoginRequest.getUsername(),
+                                authLoginRequest.getPassword()
                         )
                 );
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
@@ -52,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
                         .toList()
         );
 
-        return JwtResponse.builder()
+        return AuthResponse.builder()
                 .username(userDetails.getUsername())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -60,12 +61,13 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public JwtResponse refresh(final String refreshToken) {
-        log.info("Обновление токенов {}", refreshToken);
+    public AuthResponse refresh(final AuthRefreshRequest authRefreshRequest) {
+        log.info("Обновление токенов {}", authRefreshRequest);
 
-        JwtResponse jwtResponse;
+        AuthResponse authResponse;
         try {
-            String username = jwtTokenService.getSubject(refreshToken);
+            String username = jwtTokenService
+                    .getSubject(authRefreshRequest.getRefreshToken());
             User user = userService.getByUsername(username);
 
             String newAccessToken = jwtTokenService.issueToken(
@@ -83,7 +85,7 @@ public class AuthServiceImpl implements AuthService {
                             .collect(Collectors.toList())
             );
 
-            jwtResponse = JwtResponse.builder()
+            authResponse = AuthResponse.builder()
                     .username(user.getUsername())
                     .accessToken(newAccessToken)
                     .refreshToken(newRefreshToken)
@@ -92,6 +94,6 @@ public class AuthServiceImpl implements AuthService {
             throw new IncorrectTokenException(exception.getMessage());
         }
 
-        return jwtResponse;
+        return authResponse;
     }
 }
