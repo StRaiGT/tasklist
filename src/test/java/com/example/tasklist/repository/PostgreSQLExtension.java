@@ -42,6 +42,7 @@ public class PostgreSQLExtension implements BeforeAllCallback, AfterAllCallback 
     @Override
     public void afterAll(ExtensionContext context) {
         // do nothing, Testcontainers handles container shutdown
+        postgreSQLContainer.stop();
     }
 
     @DynamicPropertySource
