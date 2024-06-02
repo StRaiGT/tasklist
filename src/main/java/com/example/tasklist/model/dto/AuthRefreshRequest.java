@@ -2,13 +2,17 @@ package com.example.tasklist.model.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
-@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Schema(description = "Request for refresh jwt tokens")
 public class AuthRefreshRequest {
     @Schema(description = "Refresh token",
