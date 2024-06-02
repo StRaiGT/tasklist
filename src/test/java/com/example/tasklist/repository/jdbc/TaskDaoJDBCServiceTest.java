@@ -24,23 +24,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ExtendWith(PostgreSQLExtension.class)
 public class TaskDaoJDBCServiceTest {
-    TaskDaoJDBCService taskDaoJDBCService =
-            new TaskDaoJDBCService(PostgreSQLExtension.getJdbcTemplate());
-
-    UserDaoJDBCService userDaoJDBCService =
-            new UserDaoJDBCService(PostgreSQLExtension.getJdbcTemplate());
-
+    TaskDaoJDBCService taskDaoJDBCService = new TaskDaoJDBCService(PostgreSQLExtension.getJdbcTemplate());
+    UserDaoJDBCService userDaoJDBCService = new UserDaoJDBCService(PostgreSQLExtension.getJdbcTemplate());
     User user;
-
     Task task;
-
-    Task updatedTask = Task.builder()
-            .title("updatedTitle")
-            .description("updatedDescription")
-            .owner(user)
-            .status(Status.DONE)
-            .expirationDate(LocalDateTime.of(3025, 5, 2, 18, 0, 0))
-            .build();
 
     @BeforeEach
     void beforeEach() {
@@ -51,6 +38,7 @@ public class TaskDaoJDBCServiceTest {
                 .roles(Set.of(Role.ROLE_USER))
                 .build();
         user = userDaoJDBCService.createUser(user);
+
         task = Task.builder()
                 .title("title")
                 .description("description")
@@ -65,8 +53,7 @@ public class TaskDaoJDBCServiceTest {
         @Test
         void createTaskWithExpirationDate() {
             Task createdTask = taskDaoJDBCService.createTask(task);
-            Optional<Task> optionalTask =
-                    taskDaoJDBCService.getTaskById(createdTask.getId());
+            Optional<Task> optionalTask = taskDaoJDBCService.getTaskById(createdTask.getId());
 
             assertThat(optionalTask).isPresent()
                     .hasValueSatisfying(taskFromDB -> {
@@ -85,8 +72,7 @@ public class TaskDaoJDBCServiceTest {
         void createTaskWithoutExpirationDate() {
             task.setExpirationDate(null);
             Task createdTask = taskDaoJDBCService.createTask(task);
-            Optional<Task> optionalTask =
-                    taskDaoJDBCService.getTaskById(createdTask.getId());
+            Optional<Task> optionalTask = taskDaoJDBCService.getTaskById(createdTask.getId());
 
             assertThat(optionalTask).isPresent()
                     .hasValueSatisfying(taskFromDB -> {
@@ -104,11 +90,18 @@ public class TaskDaoJDBCServiceTest {
 
     @Test
     void updateTask() {
+        Task updatedTask = Task.builder()
+                .title("updatedTitle")
+                .description("updatedDescription")
+                .owner(user)
+                .status(Status.DONE)
+                .expirationDate(LocalDateTime.of(3025, 5, 2, 18, 0, 0))
+                .build();
+
         Task createdTask = taskDaoJDBCService.createTask(task);
         updatedTask.setId(createdTask.getId());
         taskDaoJDBCService.updateTask(updatedTask);
-        Optional<Task> optionalTask =
-                taskDaoJDBCService.getTaskById(updatedTask.getId());
+        Optional<Task> optionalTask = taskDaoJDBCService.getTaskById(updatedTask.getId());
 
         assertThat(optionalTask).isPresent()
                 .hasValueSatisfying(taskFromDB -> {
@@ -124,8 +117,7 @@ public class TaskDaoJDBCServiceTest {
     void deleteTaskById() {
         Task createdTask = taskDaoJDBCService.createTask(task);
         taskDaoJDBCService.deleteTaskById(createdTask.getId());
-        Optional<Task> optionalTask =
-                taskDaoJDBCService.getTaskById(createdTask.getId());
+        Optional<Task> optionalTask = taskDaoJDBCService.getTaskById(createdTask.getId());
 
         assertThat(optionalTask).isNotPresent();
     }

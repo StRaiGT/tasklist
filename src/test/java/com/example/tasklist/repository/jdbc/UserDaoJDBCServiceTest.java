@@ -19,16 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ExtendWith(PostgreSQLExtension.class)
 public class UserDaoJDBCServiceTest {
-    UserDaoJDBCService userDaoJDBCService =
-            new UserDaoJDBCService(PostgreSQLExtension.getJdbcTemplate());
-
+    UserDaoJDBCService userDaoJDBCService = new UserDaoJDBCService(PostgreSQLExtension.getJdbcTemplate());
     User user;
-
-    User updatedUser = User.builder()
-            .username("updatedUsername" + UUID.randomUUID())
-            .name("updatedName")
-            .password("updatedPassword")
-            .build();
 
     @BeforeEach
     void beforeEach() {
@@ -43,8 +35,7 @@ public class UserDaoJDBCServiceTest {
     @Test
     void createUser() {
         userDaoJDBCService.createUser(user);
-        Optional<User> optionalUser =
-                userDaoJDBCService.getUserByUsername(user.getUsername());
+        Optional<User> optionalUser = userDaoJDBCService.getUserByUsername(user.getUsername());
 
         assertThat(optionalUser).isPresent()
                 .hasValueSatisfying(userFromDB -> {
@@ -58,11 +49,16 @@ public class UserDaoJDBCServiceTest {
 
     @Test
     void updateUser() {
+        User updatedUser = User.builder()
+                .username("updatedUsername" + UUID.randomUUID())
+                .name("updatedName")
+                .password("updatedPassword")
+                .build();
+
         User createdUser = userDaoJDBCService.createUser(user);
         updatedUser.setId(createdUser.getId());
         userDaoJDBCService.updateUser(updatedUser);
-        Optional<User> optionalUser =
-                userDaoJDBCService.getUserByUsername(updatedUser.getUsername());
+        Optional<User> optionalUser = userDaoJDBCService.getUserByUsername(updatedUser.getUsername());
 
         assertThat(optionalUser).isPresent()
                 .hasValueSatisfying(userFromDB -> {
@@ -76,15 +72,13 @@ public class UserDaoJDBCServiceTest {
     @Test
     void deleteUserById() {
         userDaoJDBCService.createUser(user);
-        Optional<User> optionalUser =
-                userDaoJDBCService.getUserByUsername(user.getUsername());
+        Optional<User> optionalUser = userDaoJDBCService.getUserByUsername(user.getUsername());
 
         assertThat(optionalUser).isPresent();
 
         userDaoJDBCService.deleteUserById(optionalUser.get()
                 .getId());
-        Optional<User> deletedUser =
-                userDaoJDBCService.getUserByUsername(user.getUsername());
+        Optional<User> deletedUser = userDaoJDBCService.getUserByUsername(user.getUsername());
 
         assertThat(deletedUser).isNotPresent();
     }
@@ -92,8 +86,7 @@ public class UserDaoJDBCServiceTest {
     @Test
     void getUserById() {
         User createdUser = userDaoJDBCService.createUser(user);
-        Optional<User> optionalUser =
-                userDaoJDBCService.getUserById(createdUser.getId());
+        Optional<User> optionalUser = userDaoJDBCService.getUserById(createdUser.getId());
 
         assertThat(optionalUser).isPresent()
                 .hasValueSatisfying(userFromDB -> {
