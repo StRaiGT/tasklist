@@ -46,13 +46,14 @@ public class TaskControllerTest {
     @InjectMocks
     TaskController taskController;
 
-    ObjectMapper mapper = new ObjectMapper()
-            .registerModule(new JavaTimeModule());
+    ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
     MockMvc mvc;
     User user = User.builder()
             .id(10L)
             .build();
     Task task;
+
+    final String TASKS_URI = "/api/v1/tasks/";
 
     @BeforeEach
     void beforeEach() {
@@ -95,7 +96,7 @@ public class TaskControllerTest {
             when(taskService.update(any())).thenReturn(task);
             when(taskMapper.toTaskResponse((Task) any())).thenCallRealMethod();
 
-            mvc.perform(put("/api/v1/tasks")
+            mvc.perform(put(TASKS_URI)
                             .content(mapper.writeValueAsString(taskUpdateRequest))
                             .characterEncoding(StandardCharsets.UTF_8)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -112,7 +113,7 @@ public class TaskControllerTest {
         void shouldReturnBadRequestIfNotValid() throws Exception {
             TaskUpdateRequest taskUpdateRequest = new TaskUpdateRequest();
 
-            mvc.perform(put("/api/v1/tasks")
+            mvc.perform(put(TASKS_URI)
                             .content(mapper.writeValueAsString(taskUpdateRequest))
                             .characterEncoding(StandardCharsets.UTF_8)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -125,13 +126,13 @@ public class TaskControllerTest {
 
     @Test
     void deleteTaskById() throws Exception {
-        mvc.perform(delete("/api/v1/tasks/10")
+        mvc.perform(delete(TASKS_URI + task.getId())
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        verify(taskService, times(1)).delete(10L);
+        verify(taskService, times(1)).delete(task.getId());
     }
 
     @Test
@@ -144,17 +145,17 @@ public class TaskControllerTest {
                 .expirationDate(task.getExpirationDate())
                 .build();
 
-        when(taskService.getById(20L)).thenReturn(task);
+        when(taskService.getById(task.getId())).thenReturn(task);
         when(taskMapper.toTaskResponse(task)).thenCallRealMethod();
 
-        mvc.perform(get("/api/v1/tasks/20")
+        mvc.perform(get(TASKS_URI + task.getId())
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(mapper.writeValueAsString(taskResponse)));
 
-        verify(taskService, times(1)).getById(20L);
+        verify(taskService, times(1)).getById(task.getId());
         verify(taskMapper, times(1)).toTaskResponse(task);
     }
 }

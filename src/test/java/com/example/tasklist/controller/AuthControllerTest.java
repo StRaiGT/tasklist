@@ -51,10 +51,14 @@ public class AuthControllerTest {
     @InjectMocks
     AuthController authController;
 
-    ObjectMapper mapper = new ObjectMapper()
-            .registerModule(new JavaTimeModule());
+    ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
     MockMvc mvc;
     User user;
+
+    final String LOGIN_URI = "/api/v1/auth/login/";
+    final String REGISTER_URI = "/api/v1/auth/register/";
+    final String REFRESH_URI = "/api/v1/auth/refresh/";
+
 
     @BeforeEach
     void beforeEach() {
@@ -89,7 +93,7 @@ public class AuthControllerTest {
 
             when(authService.login(any())).thenReturn(authResponse);
 
-            mvc.perform(post("/api/v1/auth/login")
+            mvc.perform(post(LOGIN_URI)
                             .content(mapper.writeValueAsString(authLoginRequest))
                             .characterEncoding(StandardCharsets.UTF_8)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -104,7 +108,7 @@ public class AuthControllerTest {
         void shouldReturnBadRequestIfNotValid() throws Exception {
             AuthLoginRequest authLoginRequest = new AuthLoginRequest();
 
-            mvc.perform(post("/api/v1/auth/login")
+            mvc.perform(post(LOGIN_URI)
                             .content(mapper.writeValueAsString(authLoginRequest))
                             .characterEncoding(StandardCharsets.UTF_8)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -136,7 +140,7 @@ public class AuthControllerTest {
             when(userService.create(any())).thenReturn(user);
             when(userMapper.toUserResponse(any())).thenCallRealMethod();
 
-            mvc.perform(post("/api/v1/auth/register")
+            mvc.perform(post(REGISTER_URI)
                             .content(mapper.writeValueAsString(userCreateRequest))
                             .characterEncoding(StandardCharsets.UTF_8)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -153,7 +157,7 @@ public class AuthControllerTest {
         void shouldReturnBadRequestIfNotValid() throws Exception {
             UserCreateRequest userCreateRequest = new UserCreateRequest();
 
-            mvc.perform(post("/api/v1/auth/register")
+            mvc.perform(post(REGISTER_URI)
                             .content(mapper.writeValueAsString(userCreateRequest))
                             .characterEncoding(StandardCharsets.UTF_8)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -180,7 +184,7 @@ public class AuthControllerTest {
 
             when(authService.refresh(any())).thenReturn(authResponse);
 
-            mvc.perform(post("/api/v1/auth/refresh")
+            mvc.perform(post(REFRESH_URI)
                             .content(mapper.writeValueAsString(authRefreshRequest))
                             .characterEncoding(StandardCharsets.UTF_8)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -195,7 +199,7 @@ public class AuthControllerTest {
         void shouldReturnBadRequestIfNotValid() throws Exception {
             AuthRefreshRequest authRefreshRequest = new AuthRefreshRequest();
 
-            mvc.perform(post("/api/v1/auth/refresh")
+            mvc.perform(post(REFRESH_URI)
                             .content(mapper.writeValueAsString(authRefreshRequest))
                             .characterEncoding(StandardCharsets.UTF_8)
                             .contentType(MediaType.APPLICATION_JSON)

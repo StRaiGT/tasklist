@@ -61,11 +61,12 @@ public class UserControllerTest {
     @InjectMocks
     UserController userController;
 
-    ObjectMapper mapper = new ObjectMapper()
-            .registerModule(new JavaTimeModule());
+    ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
     MockMvc mvc;
     User user;
     Task task;
+
+    final String USERS_URI = "/api/v1/users/";
 
     @BeforeEach
     void beforeEach() {
@@ -113,7 +114,7 @@ public class UserControllerTest {
             when(userService.update(any())).thenReturn(user);
             when(userMapper.toUserResponse(any())).thenCallRealMethod();
 
-            mvc.perform(put("/api/v1/users")
+            mvc.perform(put(USERS_URI)
                             .content(mapper.writeValueAsString(userUpdateRequest))
                             .characterEncoding(StandardCharsets.UTF_8)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -130,7 +131,7 @@ public class UserControllerTest {
         void shouldReturnBadRequestIfNotValid() throws Exception {
             UserUpdateRequest userUpdateRequest = new UserUpdateRequest();
 
-            mvc.perform(put("/api/v1/users")
+            mvc.perform(put(USERS_URI)
                             .content(mapper.writeValueAsString(userUpdateRequest))
                             .characterEncoding(StandardCharsets.UTF_8)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -143,13 +144,13 @@ public class UserControllerTest {
 
     @Test
     void deleteById() throws Exception {
-        mvc.perform(delete("/api/v1/users/10")
+        mvc.perform(delete(USERS_URI + user.getId())
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        verify(userService, times(1)).delete(10L);
+        verify(userService, times(1)).delete(user.getId());
     }
 
     @Test
@@ -160,17 +161,17 @@ public class UserControllerTest {
                 .name(user.getName())
                 .build();
 
-        when(userService.getById(10L)).thenReturn(user);
+        when(userService.getById(user.getId())).thenReturn(user);
         when(userMapper.toUserResponse(any())).thenCallRealMethod();
 
-        mvc.perform(get("/api/v1/users/10")
+        mvc.perform(get(USERS_URI + user.getId())
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(mapper.writeValueAsString(userResponse)));
 
-        verify(userService, times(1)).getById(10L);
+        verify(userService, times(1)).getById(user.getId());
         verify(userMapper, times(1)).toUserResponse(any());
     }
 
@@ -196,7 +197,7 @@ public class UserControllerTest {
             when(taskService.create(any(), any())).thenReturn(task);
             when(taskMapper.toTaskResponse((Task) any())).thenCallRealMethod();
 
-            mvc.perform(post("/api/v1/users/10/tasks")
+            mvc.perform(post(USERS_URI + user.getId() + "/tasks/")
                             .content(mapper.writeValueAsString(taskCreateRequest))
                             .characterEncoding(StandardCharsets.UTF_8)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -213,7 +214,7 @@ public class UserControllerTest {
         void shouldReturnBadRequestIfNotValid() throws Exception {
             TaskCreateRequest taskCreateRequest = new TaskCreateRequest();
 
-            mvc.perform(post("/api/v1/users/10/tasks")
+            mvc.perform(post(USERS_URI + user.getId() + "/tasks/")
                             .content(mapper.writeValueAsString(taskCreateRequest))
                             .characterEncoding(StandardCharsets.UTF_8)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -242,7 +243,7 @@ public class UserControllerTest {
             when(taskMapper.toTaskResponse((Task) any())).thenCallRealMethod();
 
 
-            mvc.perform(get("/api/v1/users/10/tasks")
+            mvc.perform(get(USERS_URI + user.getId() + "/tasks/")
                             .characterEncoding(StandardCharsets.UTF_8)
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON))
@@ -262,7 +263,7 @@ public class UserControllerTest {
             when(taskMapper.toTaskResponse(List.of())).thenReturn(List.of());
 
 
-            mvc.perform(get("/api/v1/users/10/tasks")
+            mvc.perform(get(USERS_URI + user.getId() + "/tasks/")
                             .characterEncoding(StandardCharsets.UTF_8)
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON))

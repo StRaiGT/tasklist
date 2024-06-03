@@ -31,12 +31,6 @@ public class PostgreSQLExtension implements BeforeAllCallback, AfterAllCallback 
                 )
                 .load();
         flyway.migrate();
-
-        /*
-        System.setProperty("spring.datasource.url", postgreSQLContainer.getJdbcUrl());
-        System.setProperty("spring.datasource.username", postgreSQLContainer.getUsername());
-        System.setProperty("spring.datasource.password", postgreSQLContainer.getPassword());
-        */
     }
 
     @Override
