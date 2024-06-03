@@ -124,7 +124,8 @@ public class SecurityConfig {
                                 .requestMatchers(
                                         HttpMethod.GET,
                                         "/swagger-ui/**",
-                                        "/v3/api-docs/**"
+                                        "/v3/api-docs/**",
+                                        "/actuator/**"
                                 )
                                 .permitAll()
                                 .anyRequest()

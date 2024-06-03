@@ -45,4 +45,10 @@ spring:
 
 springdoc:
   override-with-generic-response: false
+  show-actuator: true
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: self, health
