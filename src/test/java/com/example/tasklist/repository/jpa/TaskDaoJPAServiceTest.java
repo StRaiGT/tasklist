@@ -59,6 +59,7 @@ public class TaskDaoJPAServiceTest {
     void getTasksByUserId() {
         taskDaoJPAService.getTasksByUserId(task.getId());
 
-        verify(taskRepository).findAllByOwnerId(task.getOwner().getId());
+        verify(taskRepository).findAllByOwnerId(task.getOwner()
+                .getId());
     }
 }
