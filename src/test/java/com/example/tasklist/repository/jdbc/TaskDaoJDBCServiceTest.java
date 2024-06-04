@@ -149,4 +149,38 @@ public class TaskDaoJDBCServiceTest {
             assertThat(tasks).isEmpty();
         }
     }
+
+    @Nested
+    class GetAllExpiringTasks {
+        @Test
+        void shouldGetOneTask() {
+            Task createdTask = taskDaoJDBCService.createTask(task);
+            List<Task> tasks = taskDaoJDBCService.getAllExpiringTasks(
+                    task.getExpirationDate()
+                            .minusMinutes(1),
+                    task.getExpirationDate()
+                            .plusMinutes(1)
+            );
+
+            assertThat(tasks.size()).isEqualTo(1);
+
+            Task taskFromDB = tasks.get(0);
+
+            assertThat(taskFromDB.getId()).isEqualTo(createdTask.getId());
+            assertThat(taskFromDB.getTitle()).isEqualTo(task.getTitle());
+            assertThat(taskFromDB.getDescription()).isEqualTo(task.getDescription());
+            assertThat(taskFromDB.getStatus()).isEqualTo(task.getStatus());
+            assertThat(taskFromDB.getExpirationDate()).isEqualTo(task.getExpirationDate());
+        }
+
+        @Test
+        void shouldGetEmpty() {
+            LocalDateTime now = LocalDateTime.now();
+            List<Task> tasks = taskDaoJDBCService.getAllExpiringTasks(
+                    now.minusYears(10), now.minusYears(9)
+            );
+
+            assertThat(tasks).isEmpty();
+        }
+    }
 }

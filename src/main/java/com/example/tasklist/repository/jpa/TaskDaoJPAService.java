@@ -5,6 +5,7 @@ import com.example.tasklist.repository.TaskDao;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,5 +41,13 @@ public class TaskDaoJPAService implements TaskDao {
     @Override
     public List<Task> getTasksByUserId(final Long userId) {
         return taskRepository.findAllByOwnerId(userId);
+    }
+
+    @Override
+    public List<Task> getAllExpiringTasks(
+            final LocalDateTime start,
+            final LocalDateTime end
+    ) {
+        return taskRepository.getAllByExpirationDateBetween(start, end);
     }
 }

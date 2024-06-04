@@ -2,6 +2,7 @@ package com.example.tasklist.service;
 
 import com.example.tasklist.model.entity.Task;
 
+import java.time.Duration;
 import java.util.List;
 
 public interface TaskService {
@@ -14,4 +15,6 @@ public interface TaskService {
     Task getById(Long id);
 
     List<Task> getAllByUserId(Long userId);
+
+    List<Task> getAllExpiringTasks(Duration timeByExpiration);
 }
