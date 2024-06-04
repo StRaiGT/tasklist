@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -65,6 +66,45 @@ public class TaskRepositoryTest {
             user = userRepository.save(user);
 
             List<Task> tasks = taskRepository.findAllByOwnerId(user.getId());
+
+            assertThat(tasks).isEmpty();
+        }
+    }
+
+    @Nested
+    class GetAllByExpirationDateBetween {
+        @Test
+        void shouldFindOne() {
+            User user = User.builder()
+                    .username("username" + UUID.randomUUID())
+                    .name("name")
+                    .password("password")
+                    .build();
+            user = userRepository.save(user);
+
+            Task task1 = Task.builder()
+                    .title("task1")
+                    .owner(user)
+                    .status(Status.TODO)
+                    .expirationDate(LocalDateTime.of(2055, 9, 5, 10, 0, 0))
+                    .build();
+            taskRepository.save(task1);
+
+            List<Task> tasks = taskRepository.getAllByExpirationDateBetween(
+                    task1.getExpirationDate()
+                            .minusMinutes(1),
+                    task1.getExpirationDate()
+                            .plusMinutes(1)
+            );
+
+            assertThat(tasks).isNotEmpty();
+            assertThat(tasks.size()).isEqualTo(1);
+        }
+
+        @Test
+        void shouldFindEmpty() {
+            LocalDateTime now = LocalDateTime.now();
+            List<Task> tasks = taskRepository.getAllByExpirationDateBetween(now.minusYears(10), now.minusYears(9));
 
             assertThat(tasks).isEmpty();
         }

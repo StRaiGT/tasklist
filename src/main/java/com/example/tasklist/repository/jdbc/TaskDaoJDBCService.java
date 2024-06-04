@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -109,5 +110,25 @@ public class TaskDaoJDBCService implements TaskDao {
                 """;
 
         return jdbcTemplate.query(sqlQuery, TaskRowMapper::mapTasks, userId);
+    }
+
+    @Override
+    public List<Task> getAllExpiringTasks(
+            final LocalDateTime start,
+            final LocalDateTime end
+    ) {
+        final String sqlQuery = """
+                SELECT id, title, description, status,
+                owner_id, expiration_date
+                FROM tasks
+                WHERE expiration_date is not null
+                AND expiration_date BETWEEN ? AND ?
+                """;
+
+        return jdbcTemplate.query(
+                sqlQuery,
+                TaskRowMapper::mapTasks,
+                start,
+                end);
     }
 }

@@ -14,6 +14,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -90,9 +92,19 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<Task> getAllByUserId(final Long userId) {
-        log.info("Вывод всех задачи пользователя с id {}", userId);
+        log.info("Вывод всех задач пользователя с id {}", userId);
 
         userService.getById(userId);
+
         return taskDao.getTasksByUserId(userId);
+    }
+
+    @Override
+    public List<Task> getAllExpiringTasks(final Duration timeByExpiration) {
+        log.info("Вывод всех задач со сроком истечения {}", timeByExpiration);
+
+        LocalDateTime now = LocalDateTime.now();
+
+        return taskDao.getAllExpiringTasks(now, now.plus(timeByExpiration));
     }
 }

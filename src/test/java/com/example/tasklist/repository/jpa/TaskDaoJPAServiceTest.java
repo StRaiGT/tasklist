@@ -8,6 +8,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
+
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -61,5 +63,13 @@ public class TaskDaoJPAServiceTest {
 
         verify(taskRepository).findAllByOwnerId(task.getOwner()
                 .getId());
+    }
+
+    @Test
+    void getAllExpiringTasks() {
+        LocalDateTime now = LocalDateTime.now();
+        taskDaoJPAService.getAllExpiringTasks(now, now.plusDays(1));
+
+        verify(taskRepository).getAllByExpirationDateBetween(now, now.plusDays(1));
     }
 }

@@ -31,17 +31,33 @@ spring:
       port: 6379
       ttl: 10m
 
-  security:
-    jwt:
-      secretKey: ${JWT_SECRET}
-      tokenExpiration: 5m
-      refreshTokenExpiration: 30m
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        debug: false
+        transport:
+          protocol: smtp
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    timeByExpiration: 1h
 
-    cors:
-      allowedOrigins: "*"
-      allowedMethods: "*"
-      allowedHeaders: "*"
-      exposedHeaders: "*"
+security:
+  jwt:
+    secretKey: ${JWT_SECRET}
+    tokenExpiration: 5m
+    refreshTokenExpiration: 30m
+
+  cors:
+    allowedOrigins: "*"
+    allowedMethods: "*"
+    allowedHeaders: "*"
+    exposedHeaders: "*"
 
 springdoc:
   override-with-generic-response: false

@@ -15,12 +15,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -173,6 +175,41 @@ public class TaskServiceImplTest {
 
             verify(userService, times(1)).getById(user.getId());
             verify(taskDao, times(1)).getTasksByUserId(user.getId());
+        }
+    }
+
+    @Nested
+    class GetAllExpiringTasks {
+        @Test
+        void shouldGetOneTask() {
+            when(taskDao.getAllExpiringTasks(any(), any())).thenReturn(List.of(task));
+
+            List<Task> tasks = taskServiceImpl.getAllExpiringTasks(Duration.ofHours(1));
+
+            assertThat(tasks.size()).isEqualTo(1);
+
+            Task taskFromDB = tasks.get(0);
+
+            assertThat(taskFromDB.getId()).isEqualTo(task.getId());
+            assertThat(taskFromDB.getTitle()).isEqualTo(task.getTitle());
+            assertThat(taskFromDB.getDescription()).isEqualTo(task.getDescription());
+            assertThat(taskFromDB.getOwner()
+                    .getId()).isEqualTo(user.getId());
+            assertThat(taskFromDB.getStatus()).isEqualTo(task.getStatus());
+            assertThat(taskFromDB.getExpirationDate()).isEqualTo(task.getExpirationDate());
+
+            verify(taskDao, times(1)).getAllExpiringTasks(any(), any());
+        }
+
+        @Test
+        void shouldGetEmpty() {
+            when(taskDao.getAllExpiringTasks(any(), any())).thenReturn(List.of());
+
+            List<Task> tasks = taskServiceImpl.getAllExpiringTasks(Duration.ofHours(1));
+
+            assertThat(tasks).isEmpty();
+
+            verify(taskDao, times(1)).getAllExpiringTasks(any(), any());
         }
     }
 }
